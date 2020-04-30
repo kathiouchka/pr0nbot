@@ -4,11 +4,16 @@ import (
 	"flag"
 	"fmt"
 	"math/rand"
+	"net/http"
 	"os"
 	"os/exec"
 	"os/signal"
 	"regexp"
 	"strconv"
+
+	// "strings"
+	"bytes"
+	"io/ioutil"
 	"syscall"
 	"time"
 
@@ -90,38 +95,74 @@ func random(min, max int) int {
 }
 
 func getCmd() string {
+
 	myrand := strconv.Itoa(random(1, 2500))
-	cmd := `curl 'https://scrolller.com/api/media' -H 'origin: https://scrolller.com' -H 'accept-encoding: gzip, deflate, br' -H 'accept-language: en-US,en;q=0.9' -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36' -H 'content-type: application/json' -H 'accept: */*' -H 'referer: https://scrolller.com/nsfw' -H 'authority: scrolller.com' -H 'cookie: _ga=GA1.2.661111315.1529359396; _gid=GA1.2.489592511.1529359396; _gat=1' --data-binary '[[` + myrand + `,null,0,10]]' --compressed`
+	cmd := `curl 'https://scrolller.com/api/media' -H 'origin: https://scrolller.com' -H 'accept-encoding: gzip, deflate, br' -H 'accept-language: en-US,en;q=0.9' -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36' -H 'content-type: application/json' -H 'accept: */*' -H 'referer: https://scrolller.com/nsfw' -H 'authority: scrolller.com' -H 'cookie: _ga=GA1.2.661111315.1529359396; _gid=GA1.2.489592511.1529359396; _gat=1' --data-binary '[[` + myrand + `,null,0,2]]' --compressed`
 	return cmd
 }
 
-// This function will be called (due to AddHandler above) every time a new
-// message is created on any channel that the autenticated bot has access to.
 func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
-	out, err := exec.Command("sh", "-c", getCmd()).Output()
-	if err != nil {
-		fmt.Println(err)
-	}
-	grosseString := string(out)
+
 	re := regexp.MustCompile(`([-a-zA-Z0-9_\/:.]+\.(jpg|mp4|webm))`)
-	arrayDeString := re.FindAllString(grosseString, -1)
-	if len(arrayDeString) == 0 {
-		sendpr0n(s, m)
+	chanName := regexp.MustCompile(`"(\w+)"`)
+	myrand := strconv.Itoa(random(1, 6000))
+	var jsonStr = []byte(`[[` + myrand + `,null,0,2]]`)
+	req, err := http.NewRequest("POST", "https://scrolller.com/api/media", bytes.NewBuffer(jsonStr))
+	if err != nil {
+		// handle err
 	}
-	vals := arrayDeString
-	r := rand.New(rand.NewSource(time.Now().Unix()))
-	for _, i := range r.Perm(len(vals)) {
-		val := vals[i]
-		gfy := val
-		reg := regexp.MustCompile(`gfy`)
-		anus := reg.FindString(gfy)
-		if anus == "gfy" {
-			s.ChannelMessageSend(m.ChannelID, val)
-			break
+	req.Header.Set("Authority", "scrolller.com")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Origin", "https://scrolller.com")
+	req.Header.Set("Sec-Fetch-Site", "same-origin")
+	req.Header.Set("Sec-Fetch-Mode", "cors")
+	req.Header.Set("Sec-Fetch-Dest", "empty")
+	req.Header.Set("Referer", "https://scrolller.com/nsfw")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9,fr-FR;q=0.8,fr;q=0.7")
+	req.Header.Set("Cookie", "__cfduid=d282e4ea05bcbe9d31e8693b0901d45a51587755050; _ga=GA1.2.317970967.1587755062; _gid=GA1.2.1812126065.1588158281; _gat=1")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		// handle err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusOK {
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println(err)
 		}
-		s.ChannelMessageSend(m.ChannelID, "https://scrolller.com/media/"+val)
-		break
+		bodyString := string(bodyBytes)
+		images := re.FindAllString(bodyString, -1)
+		if len(images) == 0 {
+			// restart func until we find an image
+			sendpr0n(s, m)
+		}
+		s.ChannelMessageSend(m.ChannelID, "Subreddit `"+chanName.FindString(bodyString)+"`")
+		s.ChannelMessageSend(m.ChannelID, "https://scrolller.com/media/"+images[0])
 	}
+
+	// grosseString := string(out)
+	// re := regexp.MustCompile(`([-a-zA-Z0-9_\/:.]+\.(jpg|mp4|webm))`)
+	// arrayDeString := re.FindAllString(grosseString, -1)
+	// if len(arrayDeString) == 0 {
+	// 	sendpr0n(s, m)
+	// }
+	// vals := arrayDeString
+	// r := rand.New(rand.NewSource(time.Now().Unix()))
+	// for _, i := range r.Perm(len(vals)) {
+	// 	val := vals[i]
+	// 	gfy := val
+	// 	reg := regexp.MustCompile(`gfy`)
+	// 	anus := reg.FindString(gfy)
+	// 	if anus == "gfy" {
+	// 		s.ChannelMessageSend(m.ChannelID, val)
+	// 		break
+	// 	}
+	// 	s.ChannelMessageSend(m.ChannelID, "https://scrolller.com/media/"+val)
+	// 	break
+	// }
 
 }
 
@@ -171,4 +212,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content == ".pr0nbomb" {
 		sendpr0nbomb(s, m)
 	}
+	if m.Content == ".ocl0cks" {
+		s.ChannelMessageSend(m.ChannelID, "https://slacker.scrolller.com/media/38da5d.mp4")
+	}
+
 }
