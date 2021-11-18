@@ -112,8 +112,14 @@ func getELOaoe4(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	bodyMessage := strings.Fields(m.Content)
-	playerName := bodyMessage[1]
-	matchType := bodyMessage[2]
+	var playerName string
+	var matchType string
+	if bodyMessage[1] != "" {
+		playerName = bodyMessage[1]
+	}
+	if bodyMessage[2] != "" {
+		matchType = bodyMessage[2]
+	}
 
 	data := Payload{
 		Region:       "0",
@@ -220,7 +226,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
-	r, _ := regexp.Compile(".elo ")
+	r, _ := regexp.Compile("\\.elo ")
 	msg := r.FindString(m.Content)
 	if msg != "" {
 		getELOaoe4(s, m)
