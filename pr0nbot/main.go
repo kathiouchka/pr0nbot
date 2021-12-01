@@ -114,12 +114,12 @@ func getELOaoe4(s *discordgo.Session, m *discordgo.MessageCreate) {
 	bodyMessage := strings.Fields(m.Content)
 	var playerName string
 	var matchType string
-	if bodyMessage[1] != "" {
-		playerName = bodyMessage[1]
+	if len(bodyMessage) != 3 {
+		s.ChannelMessageSend(m.ChannelID, "Wrong entry. Example : `.elo Kathiou 1v1`")
+		return
 	}
-	if bodyMessage[2] != "" {
-		matchType = bodyMessage[2]
-	}
+	playerName = bodyMessage[1]
+	matchType = bodyMessage[2]
 
 	data := Payload{
 		Region:       "0",
@@ -166,7 +166,7 @@ func getELOaoe4(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		s.ChannelMessageSend(m.ChannelID, "Elo: `"+strconv.Itoa(result.Items[0].Elo)+"` | Rank: `"+strconv.Itoa(result.Items[0].Rank)+"th`"+" | Winrate%: `"+strconv.Itoa(int(result.Items[0].WinPercent))+"`")
+		s.ChannelMessageSend(m.ChannelID, "Elo: `"+strconv.Itoa(result.Items[0].Elo)+"` | Rank: `"+strconv.Itoa(result.Items[0].Rank)+"th`"+" | Winrate%: `"+strconv.Itoa(int(result.Items[0].WinPercent))+"`"+"| Winstreak: `"+strconv.Itoa(int(result.Items[0].WinStreak))+"`")
 	} else {
 		s.ChannelMessageSend(m.ChannelID, "No data found.")
 	}
@@ -202,8 +202,6 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 			fmt.Println(err)
 		}
 		bodyString := string(bodyBytes)
-
-		s.ChannelMessageSend(m.ChannelID, bodyString)
 		images := re.FindAllString(bodyString, -1)
 		if len(images) == 0 {
 			sendpr0n(s, m)
