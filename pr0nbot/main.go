@@ -77,6 +77,7 @@ func main() {
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
 	dg.Close()
+	os.Exit(1)
 }
 
 func getELOaoe4(s *discordgo.Session, m *discordgo.MessageCreate) {
