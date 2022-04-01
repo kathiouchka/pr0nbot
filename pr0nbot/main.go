@@ -173,8 +173,44 @@ func getELOaoe4(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 }
 
+// global historic of 10 last message from discord bot
+var historic [10]string
+var historicCount int = 0
+
+func addToHistory(s *discordgo.Session, m *discordgo.MessageCreate) {
+
+	msgInfo, _ := s.Channel(m.ChannelID)
+	msgID := msgInfo.LastMessageID
+	historic[historicCount] = msgID
+	historicCount++
+	if historicCount == 10 {
+		historicCount = 0
+	}
+}
+func remFromHistory(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if historicCount == 0 {
+		historicCount = 10
+	}
+	s.ChannelMessageDelete(m.ChannelID, historic[historicCount-1])
+	historicCount--
+}
+
+func remAllFromHistory(s *discordgo.Session, m *discordgo.MessageCreate) {
+	for i := 0; i < len(historic); i++ {
+
+		if historicCount == 0 {
+			historicCount = 10
+		}
+		s.ChannelMessageDelete(m.ChannelID, historic[historicCount-1])
+		historicCount--
+	}
+}
+
 func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
-	re := regexp.MustCompile(`([-a-zA-Z0-9_\/:.]+\.(jpg|mp4|webm))`)
+	re := regexp.MustCompile(`([-a-zA-Z0-9_\/:.]+(360).(jpg))`)
+	if strings.Contains(m.Content, "vid") {
+		re = regexp.MustCompile(`([-a-zA-Z0-9_\/:.]+.(mp4))`)
+	}
 	body := strings.NewReader("{\"query\":\" query DiscoverSubredditsQuery( $filter: MediaFilter $limit: Int $iterator: String $hostsDown: [HostDisk] ) { discoverSubreddits( isNsfw: true filter: $filter limit: $limit iterator: $iterator ) { iterator items { __typename url title secondaryTitle description createdAt isNsfw subscribers isComplete itemCount videoCount pictureCount albumCount isFollowing children( limit: 2 iterator: null filter: null disabledHosts: $hostsDown ) { iterator items { __typename url title subredditTitle subredditUrl redditPath isNsfw albumUrl isFavorite mediaSources { url width height isOptimized } } } } } } \",\"variables\":{\"limit\":30,\"filter\":null,\"hostsDown\":[\"NANO\",\"PICO\"]},\"authorization\":null}")
 	req, err := http.NewRequest("POST", "https://api.scrolller.com/api/v2/graphql", body)
 	if err != nil {
@@ -205,16 +241,11 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 		images := re.FindAllString(bodyString, -1)
 		if len(images) == 0 {
 			sendpr0n(s, m)
-			return
 		}
 		image := images[rand.Intn(len(images))]
-		resp, _ := http.Get(image)
-		if resp.StatusCode != http.StatusOK {
-			sendpr0n(s, m)
-			return
-		}
-		s.ChannelMessageSend(m.ChannelID, bodyString)
-		s.ChannelMessageSend(m.ChannelID, images[rand.Intn(len(images))])
+		s.ChannelMessageSend(m.ChannelID, image)
+		addToHistory(s, m)
+
 	} else {
 		s.ChannelMessageSend(m.ChannelID, strconv.Itoa(resp.StatusCode))
 	}
@@ -229,12 +260,25 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if msg != "" {
 		getELOaoe4(s, m)
 	}
-	if m.Content == ".pr0n" {
+	if m.Content == ".pr0n" || m.Content == ".pr0n vid" {
 		sendpr0n(s, m)
 	}
 	if m.Content == ".helpzer" {
 		s.ChannelMessageSend(m.ChannelID, "``` .pr0n | .elo playerName matchType | .kathi0u | .helpzer ```")
 	}
+	fmt.Println(m.Content)
+	if strings.Contains(m.Content, "arabe") {
+		s.ChannelMessageSend(m.ChannelID, "(amine)")
+	}
+	if m.Author.Username == "Kathiou" && m.Content == ".delete" {
+		info, _ := s.Channel(m.ChannelID)
+		s.ChannelMessageDelete(m.ChannelID, info.LastMessageID)
+		remFromHistory(s, m)
+	}
+	if m.Author.Username == "Kathiou" && m.Content == ".deleteAll" {
+		remAllFromHistory(s, m)
+	}
+
 	if m.Content == ".kathi0u" {
 		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/633980782175584256/673619354360741912/kat.gif")
 	}
