@@ -266,10 +266,19 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content == ".helpzer" {
 		s.ChannelMessageSend(m.ChannelID, "``` .pr0n | .elo playerName matchType | .kathi0u | .helpzer ```")
 	}
-	fmt.Println(m.Content)
-	if strings.Contains(m.Content, "arabe") {
-		s.ChannelMessageSend(m.ChannelID, "(amine)")
+	regexDeRebeu, _ := regexp.Compile("(?i)arabe")
+	if regexDeRebeu.MatchString(m.Content) {
+		s.ChannelMessageSend(m.ChannelID, "(Amine)")
 	}
+	regexDAmine, _ := regexp.Compile("(?i)amine")
+	if regexDAmine.MatchString(m.Content) {
+		s.ChannelMessageSend(m.ChannelID, "(rebeu)")
+	}
+	regexBOB, _ := regexp.Compile("(?i)kathioubob")
+	if regexBOB.MatchString(m.Content) {
+		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/458438504129757186/1010225494869946470/kathioubob.png")
+	}
+
 	if m.Author.Username == "Kathiou" && m.Content == ".delete" {
 		info, _ := s.Channel(m.ChannelID)
 		s.ChannelMessageDelete(m.ChannelID, info.LastMessageID)
