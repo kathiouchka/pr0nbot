@@ -34,5 +34,5 @@ jobs:
       continue-on-error: true
     - name: Restart program if it is not running
       if: failure()
-      run: |
-        nohup bash -c "./pr0nbot -t $pronbotkey 2>&1 &" > pr0nbot.log
+        run: |
+          nohup bash -c "./pr0nbot -t $pronbotkey 2>&1 &" > pr0nbot.log
