@@ -130,7 +130,8 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 		urlToSend := urls[rand.Intn(len(urls))]
 
 		if m.Content == ".pr0n vid --debug" || m.Content == ".pr0n --debug" {
-			_, discordError := s.ChannelMessageSend(m.ChannelID, "```"+strings.Join(urls, "\n")+"```")
+			message := fmt.Sprintf("```%.3900s```", strings.Join(urls, "\n"))
+			_, discordError := s.ChannelMessageSend(m.ChannelID, message)
 			if discordError != nil {
 				s.ChannelMessageSend(m.ChannelID, discordError.Error())
 			}
