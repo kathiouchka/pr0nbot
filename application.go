@@ -189,6 +189,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			if channel.NSFW {
 				sendpr0n(s, m, 0)
+			} else {
+				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
 		}
 	case ".pr0n vid":
@@ -199,6 +201,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			if channel.NSFW {
 				sendpr0n(s, m, 0)
+			} else {
+				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
 		}
 	case ".pr0n vid --debug":
@@ -209,6 +213,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			if channel.NSFW {
 				sendpr0n(s, m, 0)
+			} else {
+				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
 		} else {
 			user, err := s.User("400752755775373312")
@@ -225,6 +231,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			if channel.NSFW {
 				sendpr0n(s, m, 0)
+			} else {
+				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
 		} else {
 			s.ChannelMessageSend(m.ChannelID, "T'es pas Kathiou mon pote.")
