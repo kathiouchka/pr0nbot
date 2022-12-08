@@ -87,10 +87,12 @@ func remAllFromHistory(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
-	re := regexp.MustCompile(`([-a-zA-Z0-9_\/:.]+(360).(jpg))`)
+
+	re := regexp.MustCompile(`[-a-zA-Z0-9_/:.]+(360).(jpg)`)
 	if strings.Contains(m.Content, "vid") {
-		re = regexp.MustCompile(`(https://[-a-zA-Z0-9]+.scrolller.com/[-a-zA-Z0-9]+.mp4)`)
+		re = regexp.MustCompile(`https://[-a-zA-Z0-9]+.scrolller.com/[-a-zA-Z0-9]+.mp4`)
 	}
+
 	body := strings.NewReader("{\"query\":\" query DiscoverSubredditsQuery( $filter: MediaFilter $limit: Int $iterator: String $hostsDown: [HostDisk] ) { discoverSubreddits( isNsfw: true filter: $filter limit: $limit iterator: $iterator ) { iterator items { __typename url title secondaryTitle description createdAt isNsfw subscribers isComplete itemCount videoCount pictureCount albumCount isFollowing children( limit: 2 iterator: null filter: null disabledHosts: $hostsDown ) { iterator items { __typename url title subredditTitle subredditUrl redditPath isNsfw albumUrl isFavorite mediaSources { url width height isOptimized } } } } } } \",\"variables\":{\"limit\":30,\"filter\":null,\"hostsDown\":[\"NANO\",\"PICO\"]},\"authorization\":null}")
 	req, err := http.NewRequest("POST", "https://api.scrolller.com/api/v2/graphql", body)
 	if err != nil {
@@ -134,40 +136,47 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
 
-	if m.Content == ".pr0n" || m.Content == ".pr0n vid" {
+	// Compile regular expressions
+	arabicRegex, _ := regexp.Compile("(?i)arabe")
+	amineRegex, _ := regexp.Compile("(?i)amine")
+	bobRegex, _ := regexp.Compile("(?i)kathioubob")
+
+	// Handle commands
+	switch m.Content {
+	case ".help":
+		s.ChannelMessageSend(m.ChannelID, "``` .help | .vid | .kathiou | .user ```")
+	case ".user":
+		s.ChannelMessageSend(m.ChannelID, "Hi, I'm a friendly bot that can help you with some basic tasks. Type `.help` to see a list of available commands.")
+	case ".delete":
+		if m.Author.Username == "Kathiou" {
+			info, _ := s.Channel(m.ChannelID)
+			s.ChannelMessageDelete(m.ChannelID, info.LastMessageID)
+			remFromHistory(s, m)
+		}
+	case ".deleteAll":
+		if m.Author.Username == "Kathiou" {
+			remAllFromHistory(s, m)
+		}
+	case ".kathiou":
+		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/633980782175584256/673619354360741912/kat.gif")
+	case ".pr0n":
+		sendpr0n(s, m)
+	case ".pr0n vid":
 		sendpr0n(s, m)
 	}
-	if m.Content == ".helpzer" {
-		s.ChannelMessageSend(m.ChannelID, "``` .pr0n | .pr0n vid | .kathi0u | .helpzer | kathioubob ```")
-	}
-	regexDeRebeu, _ := regexp.Compile("(?i)arabe")
-	if regexDeRebeu.MatchString(m.Content) {
+
+	// Handle regular expressions
+	if arabicRegex.MatchString(m.Content) {
 		s.ChannelMessageSend(m.ChannelID, "(Amine)")
 	}
-	regexDAmine, _ := regexp.Compile("(?i)amine")
-	if regexDAmine.MatchString(m.Content) {
+	if amineRegex.MatchString(m.Content) {
 		s.ChannelMessageSend(m.ChannelID, "(rebeu)")
 	}
-	regexBOB, _ := regexp.Compile("(?i)kathioubob")
-	if regexBOB.MatchString(m.Content) {
+	if bobRegex.MatchString(m.Content) {
 		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/458438504129757186/1010225494869946470/kathioubob.png")
-	}
-
-	if m.Author.Username == "Kathiou" && m.Content == ".delete" {
-		info, _ := s.Channel(m.ChannelID)
-		s.ChannelMessageDelete(m.ChannelID, info.LastMessageID)
-		remFromHistory(s, m)
-	}
-	if m.Author.Username == "Kathiou" && m.Content == ".deleteAll" {
-		remAllFromHistory(s, m)
-	}
-
-	if m.Content == ".kathi0u" {
-		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/633980782175584256/673619354360741912/kat.gif")
 	}
 }
