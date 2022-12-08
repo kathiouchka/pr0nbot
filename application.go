@@ -129,7 +129,10 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		if m.Content == ".pr0n vid --debug" {
 			s.ChannelMessageSend(m.ChannelID, "inside")
-			s.ChannelMessageSend(m.ChannelID, bodyString)
+			_, discordError := s.ChannelMessageSend(m.ChannelID, bodyString)
+			if discordError != nil {
+				s.ChannelMessageSend(m.ChannelID, discordError.Error())
+			}
 		} else {
 			s.ChannelMessageSend(m.ChannelID, urlToSend)
 			addToHistory(s, m)
