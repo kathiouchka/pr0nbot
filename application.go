@@ -120,9 +120,10 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 			fmt.Println(err)
 		}
 		bodyString := string(bodyBytes)
-		s.ChannelMessageSend(m.ChannelID, bodyString)
+		if m.Content == ".pr0n vid --debug" {
+			s.ChannelMessageSend(m.ChannelID, bodyString)
+		}
 		urls := re.FindAllString(bodyString, -1)
-		fmt.Println(urls)
 		if len(urls) == 0 {
 			sendpr0n(s, m)
 		}
@@ -168,6 +169,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		sendpr0n(s, m)
 	case ".pr0n vid":
 		sendpr0n(s, m)
+	case ".pr0n vid --debug":
+		if m.Author.Username == "Kathiou" {
+			sendpr0n(s, m)
+		}
+		s.ChannelMessageSend(m.ChannelID, "T'es pas Kathiou mon pote.")
 	}
 
 	// Handle regular expressions
