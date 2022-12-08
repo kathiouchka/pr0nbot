@@ -158,8 +158,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Handle commands
 	switch m.Content {
 	case ".help":
-		s.ChannelMessageSend(m.ChannelID, "``` .help | .vid | .kathiou | .user | .pr0n | .pr0n vid```")
-	case ".user":
+		s.ChannelMessageSend(m.ChannelID, "``` .help | .kathiou | .user | .pr0n | .pr0n vid```")
+	case ".pr0nbot":
 		s.ChannelMessageSend(m.ChannelID, "Hi, I'm a naughty bot that can help you with some basic tasks. Type `.help` to see a list of available commands.")
 	case ".delete":
 		if m.Author.Username == "Kathiou" {
