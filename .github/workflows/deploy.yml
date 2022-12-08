@@ -1,6 +1,8 @@
 name: deploy-pr0nbot
 
 on:
+  schedule:
+    - cron: '0 * * * *'
   push:
     branches: [ master ]
 
@@ -18,5 +20,15 @@ jobs:
           cd pr0nbot/
           git pull
           env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o pr0nbot
-          killall pr0nbot
           nohup bash -c "./pr0nbot -t $pronbotkey 2>&1 &" > pr0nbot.log
+
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check if program is running
+      run: |
+        pgrep pr0nbot
+    - name: Restart program if it is not running
+      if: failure()
+      run: |
+        nohup bash -c "./pr0nbot -t $pronbotkey 2>&1 &" > pr0nbot.log
