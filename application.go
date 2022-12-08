@@ -192,7 +192,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			s.ChannelMessageSend(m.ChannelID, "T'es pas Kathiou mon pote.")
 		}
 	case ".pr0n --version":
-		s.ChannelMessageSend(m.ChannelID, *version)
+		s.ChannelMessageSend(m.ChannelID, "`"+*version+"`")
 	}
 
 	// Handle regular expressions
