@@ -165,17 +165,17 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Handle commands
 	switch m.Content {
-	case ".help":
-		s.ChannelMessageSend(m.ChannelID, "``` .help | .kathiou | .user | .pr0n | .pr0n vid```")
+	case ".pr0n help":
+		s.ChannelMessageSend(m.ChannelID, "``` .pr0n help | .kathiou | .pr0n user | .pr0n | .pr0n vid```")
 	case ".pr0nbot":
-		s.ChannelMessageSend(m.ChannelID, "Hi, I'm a naughty bot that can help you with some basic tasks. Type `.help` to see a list of available commands.")
-	case ".delete":
+		s.ChannelMessageSend(m.ChannelID, "Hi, I'm a naughty bot that can help you with some basic tasks. Type `.pr0n help` to see a list of available commands.")
+	case ".pr0n delete":
 		if m.Author.Username == "Kathiou" {
 			info, _ := s.Channel(m.ChannelID)
 			s.ChannelMessageDelete(m.ChannelID, info.LastMessageID)
 			remFromHistory(s, m)
 		}
-	case ".deleteAll":
+	case ".pr0n deleteAll":
 		if m.Author.Username == "Kathiou" {
 			remAllFromHistory(s, m)
 		}
@@ -189,7 +189,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if m.Author.Username == "Kathiou" {
 			sendpr0n(s, m, 0)
 		} else {
-			s.ChannelMessageSend(m.ChannelID, "T'es pas Kathiou mon pote.")
+			s.ChannelMessageSend(m.ChannelID, "T'es pas <@KATHIOU> mon pote.")
 		}
 	case ".pr0n --debug":
 		if m.Author.Username == "Kathiou" {
