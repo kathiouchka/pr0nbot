@@ -191,7 +191,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		} else {
 			user, err := s.User("400752755775373312")
 			if err != nil {
-				fmt.Printf("bog")
+				s.ChannelMessageSend(m.ChannelID, err.Error())
 			}
 			s.ChannelMessageSend(m.ChannelID, "T'es pas <@!"+user.ID+"> mon pote.")
 		}
