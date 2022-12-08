@@ -19,6 +19,6 @@ jobs:
           git pull
           env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o pr0nbot
           killall pr0nbot
-          nohup ./pr0nbot -t $pronbotkey
+          nohup ./pr0nbot -t $pronbotkey &
 
     
