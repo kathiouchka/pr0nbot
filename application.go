@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
-	"strconv"
 
 	"io/ioutil"
 	"strings"
@@ -88,15 +87,13 @@ func remAllFromHistory(s *discordgo.Session, m *discordgo.MessageCreate) {
 	historic = nil
 }
 
-func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
-
-	re := regexp.MustCompile(`[-a-zA-Z0-9_/:.]+(1080).(jpg)`)
-	// Sans option
-	// re := regexp.MustCompile(`[-a-zA-Z0-9_/:.]+(jpg)`)
-	if strings.Contains(m.Content, "vid") {
+func findUrls(content string) []string {
+	var re *regexp.Regexp
+	if strings.Contains(content, "vid") {
 		re = regexp.MustCompile(`https://[-a-zA-Z0-9]+.scrolller.com/[-a-zA-Z0-9]+.mp4`)
+	} else {
+		re = regexp.MustCompile(`[-a-zA-Z0-9_/:.]+(1080).(jpg)`)
 	}
-
 	body := strings.NewReader("{\"query\":\" query DiscoverSubredditsQuery( $filter: MediaFilter $limit: Int $iterator: String $hostsDown: [HostDisk] ) { discoverSubreddits( isNsfw: true filter: $filter limit: $limit iterator: $iterator ) { iterator items { __typename url title secondaryTitle description createdAt isNsfw subscribers isComplete itemCount videoCount pictureCount albumCount isFollowing children( limit: 2 iterator: null filter: null disabledHosts: $hostsDown ) { iterator items { __typename url title subredditTitle subredditUrl redditPath isNsfw albumUrl isFavorite mediaSources { url width height isOptimized } } } } } } \",\"variables\":{\"limit\":30,\"filter\":null,\"hostsDown\":[\"NANO\",\"PICO\"]},\"authorization\":null}")
 	req, err := http.NewRequest("POST", "https://api.scrolller.com/api/v2/graphql", body)
 	if err != nil {
@@ -125,25 +122,34 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		bodyString := string(bodyBytes)
 		urls := re.FindAllString(bodyString, -1)
-		if len(urls) == 0 {
-			sendpr0n(s, m)
+		return urls
+	}
+	return nil
+}
+
+func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int) {
+
+	if counter == 5 {
+		s.ChannelMessageSend(m.ChannelID, "`Error: I cannot find an image right now.`")
+		counter = 0
+	}
+
+	urls := findUrls(m.Content)
+	if len(urls) == 0 {
+		sendpr0n(s, m, counter)
+	}
+
+	urlToSend := urls[rand.Intn(len(urls))]
+
+	if m.Content == ".pr0n vid --debug" || m.Content == ".pr0n --debug" {
+		message := fmt.Sprintf("```%.1950s```", strings.Join(urls, "\n"))
+		_, discordError := s.ChannelMessageSend(m.ChannelID, message)
+		if discordError != nil {
+			s.ChannelMessageSend(m.ChannelID, discordError.Error())
 		}
-
-		urlToSend := urls[rand.Intn(len(urls))]
-
-		if m.Content == ".pr0n vid --debug" || m.Content == ".pr0n --debug" {
-			message := fmt.Sprintf("```%.1950s```", strings.Join(urls, "\n"))
-			_, discordError := s.ChannelMessageSend(m.ChannelID, message)
-			if discordError != nil {
-				s.ChannelMessageSend(m.ChannelID, discordError.Error())
-			}
-		} else {
-			s.ChannelMessageSend(m.ChannelID, urlToSend)
-			addToHistory(s, m)
-		}
-
 	} else {
-		s.ChannelMessageSend(m.ChannelID, strconv.Itoa(resp.StatusCode))
+		s.ChannelMessageSend(m.ChannelID, urlToSend)
+		addToHistory(s, m)
 	}
 }
 
@@ -176,23 +182,27 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	case ".kathiou":
 		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/633980782175584256/673619354360741912/kat.gif")
 	case ".pr0n":
-		sendpr0n(s, m)
+		sendpr0n(s, m, 0)
 	case ".pr0n vid":
-		sendpr0n(s, m)
+		sendpr0n(s, m, 0)
 	case ".pr0n vid --debug":
 		if m.Author.Username == "Kathiou" {
-			sendpr0n(s, m)
+			sendpr0n(s, m, 0)
 		} else {
 			s.ChannelMessageSend(m.ChannelID, "T'es pas Kathiou mon pote.")
 		}
 	case ".pr0n --debug":
 		if m.Author.Username == "Kathiou" {
-			sendpr0n(s, m)
+			sendpr0n(s, m, 0)
 		} else {
 			s.ChannelMessageSend(m.ChannelID, "T'es pas Kathiou mon pote.")
 		}
 	case ".pr0n --version":
-		s.ChannelMessageSend(m.ChannelID, "`"+*version+"`")
+		{
+			versionParts := strings.Split(*version, "-")
+			numericVersion := versionParts[0]
+			s.ChannelMessageSend(m.ChannelID, "`"+numericVersion+"`")
+		}
 	}
 
 	// Handle regular expressions
