@@ -130,7 +130,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		if m.Content == ".pr0n vid --debug" {
 			s.ChannelMessageSend(m.ChannelID, "inside")
-			_, discordError := s.ChannelMessageSend(m.ChannelID, strings.Join(urls, ","))
+			_, discordError := s.ChannelMessageSend(m.ChannelID, "```"+strings.Join(urls, ", ")+"```")
 			if discordError != nil {
 				s.ChannelMessageSend(m.ChannelID, discordError.Error())
 			}
