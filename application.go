@@ -28,6 +28,8 @@ func init() {
 	flag.Parse()
 }
 
+var version = flag.String("version", "1.0.0", "the version number of the bot")
+
 func main() {
 	dg, err := discordgo.New("Bot " + Token)
 	if err != nil {
@@ -40,7 +42,7 @@ func main() {
 		fmt.Println("error opening connection,", err)
 		return
 	}
-	// fmt.Println("Bot is now running.  Press CTRL-C to exit.")
+	flag.Parse()
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
@@ -189,6 +191,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		} else {
 			s.ChannelMessageSend(m.ChannelID, "T'es pas Kathiou mon pote.")
 		}
+	case ".pr0n --version":
+		s.ChannelMessageSend(m.ChannelID, *version)
 	}
 
 	// Handle regular expressions
