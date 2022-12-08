@@ -88,7 +88,8 @@ func remAllFromHistory(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-	re := regexp.MustCompile(`[-a-zA-Z0-9_/:.]+(360).(jpg)`)
+	// re := regexp.MustCompile(`[-a-zA-Z0-9_/:.]+(360).(jpg)`)
+	re := regexp.MustCompile(`[-a-zA-Z0-9_/:.]+(jpg)`)
 	// re := regexp.MustCompile(`[-a-zA-Z0-9_/:.]`)
 	if strings.Contains(m.Content, "vid") {
 		re = regexp.MustCompile(`https://[-a-zA-Z0-9]+.scrolller.com/[-a-zA-Z0-9]+.mp4`)
