@@ -88,8 +88,8 @@ func remAllFromHistory(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-	// re := regexp.MustCompile(`[-a-zA-Z0-9_/:.]+(360).(jpg)`)
-	re := regexp.MustCompile(`[-a-zA-Z0-9_/:.]`)
+	re := regexp.MustCompile(`[-a-zA-Z0-9_/:.]+(360).(jpg)`)
+	// re := regexp.MustCompile(`[-a-zA-Z0-9_/:.]`)
 	if strings.Contains(m.Content, "vid") {
 		re = regexp.MustCompile(`https://[-a-zA-Z0-9]+.scrolller.com/[-a-zA-Z0-9]+.mp4`)
 	}
@@ -129,7 +129,6 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 		urlToSend := urls[rand.Intn(len(urls))]
 
 		if m.Content == ".pr0n vid --debug" || m.Content == ".pr0n --debug" {
-			s.ChannelMessageSend(m.ChannelID, "inside")
 			_, discordError := s.ChannelMessageSend(m.ChannelID, "```"+strings.Join(urls, "\n")+"```")
 			if discordError != nil {
 				s.ChannelMessageSend(m.ChannelID, discordError.Error())
