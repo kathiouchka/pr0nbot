@@ -3,6 +3,9 @@ name: deploy-pr0nbot
 on:
   schedule:
     - cron: '0 * * * *'
+    - name: Monitor
+      jobs:
+        - monitor
   push:
     branches: [ master ]
 
@@ -28,6 +31,7 @@ jobs:
     - name: Check if program is running
       run: |
         pgrep pr0nbot
+      continue-on-error: true
     - name: Restart program if it is not running
       if: failure()
       run: |
