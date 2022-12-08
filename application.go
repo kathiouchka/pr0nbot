@@ -187,7 +187,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
 			}
-			if !channel.NSFW {
+			if channel.NSFW {
 				sendpr0n(s, m, 0)
 			}
 		}
@@ -197,7 +197,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
 			}
-			if !channel.NSFW {
+			if channel.NSFW {
 				sendpr0n(s, m, 0)
 			}
 		}
@@ -207,7 +207,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
 			}
-			if !channel.NSFW {
+			if channel.NSFW {
 				sendpr0n(s, m, 0)
 			}
 		} else {
@@ -223,7 +223,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
 			}
-			if !channel.NSFW {
+			if channel.NSFW {
 				sendpr0n(s, m, 0)
 			}
 		} else {
