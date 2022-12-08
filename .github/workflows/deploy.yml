@@ -1,11 +1,11 @@
-name: hello-world
+name: deploy-pr0nbot
 
 on:
   push:
     branches: [ master ]
 
 jobs:
-  hello:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - name: SSH Remote Commands
