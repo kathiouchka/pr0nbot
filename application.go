@@ -120,6 +120,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 			fmt.Println(err)
 		}
 		bodyString := string(bodyBytes)
+		s.ChannelMessageSend(m.ChannelID, bodyString)
 		urls := re.FindAllString(bodyString, -1)
 		fmt.Println(urls)
 		if len(urls) == 0 {
@@ -148,9 +149,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Handle commands
 	switch m.Content {
 	case ".help":
-		s.ChannelMessageSend(m.ChannelID, "``` .help | .vid | .kathiou | .user ```")
+		s.ChannelMessageSend(m.ChannelID, "``` .help | .vid | .kathiou | .user | .pr0n | .pr0n vid```")
 	case ".user":
-		s.ChannelMessageSend(m.ChannelID, "Hi, I'm a friendly bot that can help you with some basic tasks. Type `.help` to see a list of available commands.")
+		s.ChannelMessageSend(m.ChannelID, "Hi, I'm a naughty bot that can help you with some basic tasks. Type `.help` to see a list of available commands.")
 	case ".delete":
 		if m.Author.Username == "Kathiou" {
 			info, _ := s.Channel(m.ChannelID)
