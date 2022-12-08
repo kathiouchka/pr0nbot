@@ -128,9 +128,9 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		urlToSend := urls[rand.Intn(len(urls))]
 
-		if m.Content == ".pr0n vid --debug" {
+		if m.Content == ".pr0n vid --debug" || m.Content == ".pr0n --debug" {
 			s.ChannelMessageSend(m.ChannelID, "inside")
-			_, discordError := s.ChannelMessageSend(m.ChannelID, "```"+strings.Join(urls, ", ")+"```")
+			_, discordError := s.ChannelMessageSend(m.ChannelID, "```"+strings.Join(urls, ", \\n")+"```")
 			if discordError != nil {
 				s.ChannelMessageSend(m.ChannelID, discordError.Error())
 			}
@@ -177,6 +177,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	case ".pr0n vid":
 		sendpr0n(s, m)
 	case ".pr0n vid --debug":
+		if m.Author.Username == "Kathiou" {
+			sendpr0n(s, m)
+		} else {
+			s.ChannelMessageSend(m.ChannelID, "T'es pas Kathiou mon pote.")
+		}
+	case ".pr0n --debug":
 		if m.Author.Username == "Kathiou" {
 			sendpr0n(s, m)
 		} else {
