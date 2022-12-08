@@ -3,7 +3,7 @@ name: deploy-pr0nbot
 on:
   schedule:
     - cron: '0 * * * *'
-    - name: Monitor
+      name: Monitor
       jobs:
         - monitor
   push:
