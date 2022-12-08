@@ -189,7 +189,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if m.Author.Username == "Kathiou" {
 			sendpr0n(s, m, 0)
 		} else {
-			user, _ := s.User("Kathiou")
+			user, err := s.User("400752755775373312")
+			if err != nil {
+				fmt.Printf("bog")
+			}
 			s.ChannelMessageSend(m.ChannelID, "T'es pas <@!"+user.ID+"> mon pote.")
 		}
 	case ".pr0n --debug":
