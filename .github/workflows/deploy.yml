@@ -5,12 +5,14 @@ on:
     - cron: '0 * * * *'
       name: Monitor
       jobs:
-        - deploy
+        - cron-deploy
   push:
     branches: [ master ]
+    jobs:
+      - master-deploy
 
 jobs:
-  deploy:
+  cron-deploy:
     runs-on: ubuntu-latest
     steps:
     - name: SSH Remote Commands
@@ -30,3 +32,19 @@ jobs:
             killall pr0nbot
             nohup bash -c "./pr0nbot -t $pronbotkey --version $(git describe --tags) 2>&1 &" > pr0nbot.log
           fi
+
+  master-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: SSH Remote Commands
+      uses: appleboy/ssh-action@v0.1.4
+      with:
+        host: ${{ secrets.HOST }} 
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD}}
+        script: |
+          cd pr0nbot/
+          git pull
+          env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o pr0nbot
+          killall pr0nbot
+          nohup bash -c "./pr0nbot -t $pronbotkey --version $(git describe --tags) 2>&1 &" > pr0nbot.log
