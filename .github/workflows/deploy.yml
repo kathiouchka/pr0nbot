@@ -21,7 +21,12 @@ jobs:
         password: ${{ secrets.PASSWORD}}
         script: |
           cd pr0nbot/
-          git pull
-          env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o pr0nbot
-          killall pr0nbot
-          nohup bash -c "./pr0nbot -t $pronbotkey --version $(git describe --tags) 2>&1 &" > pr0nbot.log
+          # Check the status of the pr0nbot program
+          pr0nbot_status=$(systemctl status pr0nbot)
+          # If the pr0nbot program is not running, deploy the project
+          if [[ ! $pr0nbot_status == *"running"* ]]; then
+            git pull
+            env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o pr0nbot
+            killall pr0nbot
+            nohup bash -c "./pr0nbot -t $pronbotkey --version $(git describe --tags) 2>&1 &" > pr0nbot.log
+          fi
