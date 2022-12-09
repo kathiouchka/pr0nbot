@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"strconv"
 
 	"io/ioutil"
 	"strings"
@@ -153,6 +154,22 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int) {
 	}
 }
 
+func getData(s *discordgo.Session, m *discordgo.MessageCreate) {
+	messages, err := s.ChannelMessages(m.ChannelID, 100, "", "", "")
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, err.Error())
+	}
+	var botMessages int
+	for _, message := range messages {
+		if message.Author.ID == s.State.User.ID {
+			botMessages++
+		}
+	}
+	if botMessages > 0 {
+		s.ChannelMessageSend(m.ChannelID, strconv.Itoa(botMessages))
+	}
+}
+
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
@@ -165,6 +182,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Handle commands
 	switch m.Content {
+	case ".pr0n data":
+		getData(s, m)
 	case ".pr0n help":
 		s.ChannelMessageSend(m.ChannelID, "``` .pr0n help | .kathiou | .pr0n user | .pr0n | .pr0n vid```")
 	case ".pr0nbot":
@@ -252,127 +271,3 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/458438504129757186/1010225494869946470/kathioubob.png")
 	}
 }
-
-// func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	if m.Author.ID == s.State.User.ID {
-// 		return
-// 	}
-
-// 	// Compile regular expressions
-// 	arabicRegex, _ := regexp.Compile("(?i)arabe")
-// 	amineRegex, _ := regexp.Compile("(?i)amine")
-// 	bobRegex, _ := regexp.Compile("(?i)kathioubob")
-
-// 	// Create a map to store command handlers
-// 	commandHandlers := map[string]func(*discordgo.Session, *discordgo.MessageCreate){
-// 		".pr0n help":        handleHelp,
-// 		".pr0nbot":          handlePr0nbot,
-// 		".pr0n delete":      handleDelete,
-// 		".pr0n deleteAll":   handleDeleteAll,
-// 		".kathiou":          handleKathiou,
-// 		".pr0n":             handlePr0n,
-// 		".pr0n vid":         handlePr0nVid,
-// 		".pr0n vid --debug": handlePr0nVidDebug,
-// 		".pr0n --debug":     handlePr0nDebug,
-// 		".pr0n --version":   handlePr0nVersion,
-// 		// Add more command handlers here
-// 	}
-
-// 	// Check if the message is a command and call the corresponding handler function
-// 	if handler, ok := commandHandlers[m.Content]; ok {
-// 		handler(s, m)
-// 	}
-// 	// Handle regular expressions
-// 	if arabicRegex.MatchString(m.Content) {
-// 		s.ChannelMessageSend(m.ChannelID, "(Amine)")
-// 	}
-// 	if amineRegex.MatchString(m.Content) {
-// 		s.ChannelMessageSend(m.ChannelID, "(rebeu)")
-// 	}
-// 	if bobRegex.MatchString(m.Content) {
-// 		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/458438504129757186/1010225494869946470/kathioubob.png")
-// 	}
-// }
-
-// // Define the handler functions
-
-// func handleHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	s.ChannelMessageSend(m.ChannelID, "``` .pr0n help | .kathiou | .pr0n user | .pr0n | .pr0n vid```")
-// }
-
-// func handlePr0nbot(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	s.ChannelMessageSend(m.ChannelID, "Hi, I'm a naughty bot that can help you with some basic tasks. Type `.pr0n help` to see a list of available commands.")
-// }
-
-// func handleDelete(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	if m.Author.Username == "Kathiou" {
-// 		info, _ := s.Channel(m.ChannelID)
-// 		s.ChannelMessageDelete(m.ChannelID, info.LastMessageID)
-// 		remFromHistory(s, m)
-// 	}
-// }
-
-// func handleDeleteAll(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	if m.Author.Username == "Kathiou" {
-// 		remAllFromHistory(s, m)
-// 	}
-// }
-
-// func handleKathiou(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/633980782175584256/673619354360741912/kat.gif")
-// }
-
-// func handlePr0n(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	channel, err := s.Channel(m.ChannelID)
-// 	if err != nil {
-// 		s.ChannelMessageSend(m.ChannelID, err.Error())
-// 	}
-// 	if !channel.NSFW {
-// 		sendpr0n(s, m, 0)
-// 	}
-// }
-
-// func handlePr0nVid(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	channel, err := s.Channel(m.ChannelID)
-// 	if err != nil {
-// 		s.ChannelMessageSend(m.ChannelID, err.Error())
-// 	}
-// 	if !channel.NSFW {
-// 		sendpr0n(s, m, 0)
-// 	}
-// }
-
-// func handlePr0nVidDebug(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	if m.Author.Username == "Kathiou" {
-// 		channel, err := s.Channel(m.ChannelID)
-// 		if err != nil {
-// 			s.ChannelMessageSend(m.ChannelID, err.Error())
-// 		}
-// 		if !channel.NSFW {
-// 			sendpr0n(s, m, 0)
-// 		}
-// 	} else {
-// 		user, err := s.User("400752755775373312")
-// 		if err != nil {
-// 			s.ChannelMessageSend(m.ChannelID, err.Error())
-// 		}
-// 		s.ChannelMessageSend(m.ChannelID, "T'es pas <@!"+user.ID+"> mon pote.")
-// 	}
-// }
-// func handlePr0nDebug(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	if m.Author.Username == "Kathiou" {
-// 		channel, err := s.Channel(m.ChannelID)
-// 		if err != nil {
-// 			s.ChannelMessageSend(m.ChannelID, err.Error())
-// 		}
-// 		if !channel.NSFW {
-// 			sendpr0n(s, m, 0)
-// 		}
-// 	} else {
-// 		s.ChannelMessageSend(m.ChannelID, "T'es pas Kathiou mon pote.")
-// 	}
-// }
-
-// func handlePr0nVersion(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	s.ChannelMessageSend(m.ChannelID, "`"+*version+"`")
-// }
