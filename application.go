@@ -391,14 +391,17 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 		}
 	case subredditRegexp.FindString(m.Content):
-		channel, err := s.Channel(m.ChannelID)
-		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, err.Error())
-		}
-		if channel.NSFW {
-			sendpr0n(s, m, 0)
-		} else {
-			s.ChannelMessageSend(m.ChannelID, "This channel is not DEBUG4!")
+		{
+			channel, err := s.Channel(m.ChannelID)
+			if err != nil {
+				s.ChannelMessageSend(m.ChannelID, err.Error())
+			}
+			if channel.NSFW {
+				sendpr0n(s, m, 0)
+			} else {
+				s.ChannelMessageSend(m.ChannelID, "This channel is not DEBUG4!")
+				s.ChannelMessageSend(m.ChannelID, m.Content)
+			}
 		}
 
 	// HOW TO PING USER
