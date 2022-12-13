@@ -313,7 +313,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int) {
 		}
 		addToHistory(s, m)
 	} else if counter == 2 {
-		s.ChannelMessageSend(m.ChannelID, "`Error: this subreddit does not exist MSG =`"+m.Content)
+		s.ChannelMessageSend(m.ChannelID, "`Error: this subreddit does not exist.`")
 	}
 }
 
@@ -323,16 +323,16 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// Compile regular expressions
-	arabicRegex, _ := regexp.Compile(`(^|\s)arabe(\s|$)`)
-	amineRegex, _ := regexp.Compile(`(^|\s)amine(\s|$)`)
-	sveylRegex, _ := regexp.Compile(`(^|\s)sveyl(\s|$)`)
+	arabicRegex, _ := regexp.Compile(`(?i)(^|\s)arabe(\s|$)`)
+	amineRegex, _ := regexp.Compile(`(?i)(^|\s)amine(\s|$)`)
+	sveylRegex, _ := regexp.Compile(`(?i)(^|\s)sveyl(\s|$)`)
 	bobRegex, _ := regexp.Compile("(?i)kathioubob")
 	subredditRegexp := regexp.MustCompile(`\.pr0n\s\w+`)
 
 	// Handle commands
 	switch m.Content {
 	case ".pr0n help":
-		s.ChannelMessageSend(m.ChannelID, "``` .pr0n help | .kathiou | .pr0n | .pr0n vid | .pr0n list```")
+		s.ChannelMessageSend(m.ChannelID, "``` .pr0n help | .kathiou | .pr0n | .pr0n vid | .pr0n listnsfw | .pr0n code```")
 	case ".pr0nbot":
 		s.ChannelMessageSend(m.ChannelID, "Hi, I'm a naughty bot that can help you with some basic tasks. Type `.pr0n help` to see a list of available commands.")
 	case ".pr0n delete":
@@ -345,7 +345,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if m.Author.Username == "Kathiou" {
 			remAllFromHistory(s, m)
 		}
-	case ".pr0n list":
+	case ".pr0n listnsfw":
 		channel, err := s.Channel(m.ChannelID)
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, err.Error())
