@@ -313,7 +313,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int) {
 		}
 		addToHistory(s, m)
 	} else if counter == 2 {
-		s.ChannelMessageSend(m.ChannelID, "`Error: this subreddit does not exist`")
+		s.ChannelMessageSend(m.ChannelID, "`Error: this subreddit does not exist MSG =`"+m.Content)
 	}
 }
 
