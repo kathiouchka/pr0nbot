@@ -327,7 +327,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	amineRegex, _ := regexp.Compile(`(^|\s)amine(\s|$)`)
 	sveylRegex, _ := regexp.Compile(`(^|\s)sveyl(\s|$)`)
 	bobRegex, _ := regexp.Compile("(?i)kathioubob")
-	subredditRegexp := regexp.MustCompile(`^\.pr0n\s+\w+`)
+	subredditRegexp := regexp.MustCompile(`\.pr0n\s\w+`)
 
 	// Handle commands
 	switch m.Content {
@@ -392,6 +392,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	case subredditRegexp.FindString(m.Content):
 		{
+			if m.Content == "" {
+				break
+			}
 			channel, err := s.Channel(m.ChannelID)
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
