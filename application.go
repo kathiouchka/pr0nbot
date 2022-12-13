@@ -353,7 +353,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if channel.NSFW {
 			s.ChannelMessageSend(m.ChannelID, "https://www.reddit.com/r/NSFW411/wiki/index/")
 		} else {
-			s.ChannelMessageSend(m.ChannelID, "This channel is not DEBUG!")
+			s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 		}
 	case ".pr0n code":
 		s.ChannelMessageSend(m.ChannelID, "https://github.com/kathiouchka/pr0nbot")
@@ -368,7 +368,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if channel.NSFW {
 				sendpr0n(s, m, 0)
 			} else {
-				s.ChannelMessageSend(m.ChannelID, "This channel is not DEBUG2!")
+				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
 		}
 	case ".pr0n rand":
@@ -387,7 +387,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if channel.NSFW {
 				sendpr0n(s, m, 0)
 			} else {
-				s.ChannelMessageSend(m.ChannelID, "This channel is not DEBUG3!")
+				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
 		}
 	case subredditRegexp.FindString(m.Content):
@@ -402,8 +402,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if channel.NSFW {
 				sendpr0n(s, m, 0)
 			} else {
-				s.ChannelMessageSend(m.ChannelID, "This channel is not DEBUG4!")
-				s.ChannelMessageSend(m.ChannelID, m.Content)
+				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
 		}
 
