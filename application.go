@@ -249,13 +249,13 @@ func getSubData(sub string) subScrollerStruct {
 	return res
 }
 
-func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int) {
+func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, customDebuff string) {
 
 	index := strings.Index(m.Content, " ")
 	subreddit := strings.ToLower(m.Content[index+1:])
 	var urls []string
 	var subTitles []string
-	if subreddit == ".pr0n" {
+	if subreddit == ".pr0n" && m.Author.ID != "374373535369396225" {
 		data := getRandData()
 		for _, item := range data.Data.DiscoverSubreddits.Items {
 			for _, mediaSource := range item.Children.Items {
@@ -282,6 +282,10 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int) {
 			}
 		}
 	} else {
+		if customDebuff != "" {
+			subreddit = customDebuff
+		}
+		fmt.Println(subreddit)
 		data := getSubData(subreddit)
 		for _, item := range data.Data.GetSubreddit.Children.Items {
 			for _, source := range item.MediaSources {
@@ -295,7 +299,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int) {
 
 	if len(urls) == 0 && counter < 3 {
 		counter++
-		sendpr0n(s, m, counter)
+		sendpr0n(s, m, counter, "")
 	}
 
 	if counter == 0 {
@@ -366,7 +370,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
 			}
 			if channel.NSFW {
-				sendpr0n(s, m, 0)
+				if m.Author.ID == "374373535369396225" {
+					sendpr0n(s, m, 0, "hentai")
+				} else {
+					sendpr0n(s, m, 0, "")
+				}
 			} else {
 				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
@@ -385,7 +393,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
 			}
 			if channel.NSFW {
-				sendpr0n(s, m, 0)
+				sendpr0n(s, m, 0, "")
 			} else {
 				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
@@ -400,7 +408,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
 			}
 			if channel.NSFW {
-				sendpr0n(s, m, 0)
+				sendpr0n(s, m, 0, "")
 			} else {
 				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
