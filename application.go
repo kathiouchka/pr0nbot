@@ -28,7 +28,46 @@ func init() {
 	flag.Parse()
 }
 
-var version = flag.String("version", "1.0.0", "the version number of the bot")
+type scrolllerStruct struct {
+	Data struct {
+		GetSubreddit struct {
+			Children struct {
+				Iterator string `json:"iterator"`
+				Items    []struct {
+					Typename         string      `json:"__typename"`
+					ID               int         `json:"id"`
+					URL              string      `json:"url"`
+					Title            string      `json:"title"`
+					SubredditID      int         `json:"subredditId"`
+					SubredditTitle   string      `json:"subredditTitle"`
+					SubredditURL     string      `json:"subredditUrl"`
+					RedditPath       string      `json:"redditPath"`
+					IsNsfw           bool        `json:"isNsfw"`
+					AlbumURL         interface{} `json:"albumUrl"`
+					HasAudio         interface{} `json:"hasAudio"`
+					FullLengthSource interface{} `json:"fullLengthSource"`
+					GfycatSource     interface{} `json:"gfycatSource"`
+					RedgifsSource    interface{} `json:"redgifsSource"`
+					OwnerAvatar      interface{} `json:"ownerAvatar"`
+					Username         interface{} `json:"username"`
+					DisplayName      interface{} `json:"displayName"`
+					IsPaid           interface{} `json:"isPaid"`
+					Tags             interface{} `json:"tags"`
+					IsFavorite       bool        `json:"isFavorite"`
+					MediaSources     []struct {
+						URL         string `json:"url"`
+						Width       int    `json:"width"`
+						Height      int    `json:"height"`
+						IsOptimized bool   `json:"isOptimized"`
+					} `json:"mediaSources"`
+					BlurredMediaSources interface{} `json:"blurredMediaSources"`
+				} `json:"items"`
+			} `json:"children"`
+		} `json:"getSubreddit"`
+	} `json:"data"`
+}
+
+var version = flag.String("version", "v.0.0.TEST", "the version number of the bot")
 
 func main() {
 	dg, err := discordgo.New("Bot " + Token)
@@ -90,13 +129,25 @@ func remAllFromHistory(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func findUrls(content string) []string {
 	var re *regexp.Regexp
+	var body *strings.Reader
 	if strings.Contains(content, "vid") {
 		re = regexp.MustCompile(`https://[-a-zA-Z0-9]+.scrolller.com/[-a-zA-Z0-9]+.mp4`)
 	} else {
 		re = regexp.MustCompile(`[-a-zA-Z0-9_/:.]+(1080).(jpg)`)
 	}
-	body := strings.NewReader("{\"query\":\" query DiscoverSubredditsQuery( $filter: MediaFilter $limit: Int $iterator: String $hostsDown: [HostDisk] ) { discoverSubreddits( isNsfw: true filter: $filter limit: $limit iterator: $iterator ) { iterator items { __typename url title secondaryTitle description createdAt isNsfw subscribers isComplete itemCount videoCount pictureCount albumCount isFollowing children( limit: 2 iterator: null filter: null disabledHosts: $hostsDown ) { iterator items { __typename url title subredditTitle subredditUrl redditPath isNsfw albumUrl isFavorite mediaSources { url width height isOptimized } } } } } } \",\"variables\":{\"limit\":30,\"filter\":null,\"hostsDown\":[\"NANO\",\"PICO\"]},\"authorization\":null}")
+	// body := strings.NewReader("{\"query\":\" query DiscoverSubredditsQuery( $filter: MediaFilter $limit: Int $iterator: String $hostsDown: [HostDisk] ) { discoverSubreddits( isNsfw: true filter: $filter limit: $limit iterator: $iterator ) { iterator items { __typename url title secondaryTitle description createdAt isNsfw subscribers isComplete itemCount videoCount pictureCount albumCount isFollowing children( limit: 2 iterator: null filter: null disabledHosts: $hostsDown ) { iterator items { __typename url title subredditTitle subredditUrl redditPath isNsfw albumUrl isFavorite mediaSources { url width height isOptimized } } } } } } \",\"variables\":{\"limit\":30,\"filter\":null,\"hostsDown\":[\"NANO\",\"PICO\"]},\"authorization\":null}")
+	index := strings.Index(content, " ")
+	subreddit := strings.ToLower(content[index+1:])
+	if subreddit == ".pr0n" || subreddit == "vid" {
+		// .pr0n
+		fmt.Println("SUBREDDIT = ", subreddit)
+		body = strings.NewReader("{\"query\":\" query DiscoverSubredditsQuery( $filter: MediaFilter $limit: Int $iterator: String $hostsDown: [HostDisk] ) { discoverSubreddits( isNsfw: true filter: $filter limit: $limit iterator: $iterator ) { iterator items { __typename url title secondaryTitle description createdAt isNsfw subscribers isComplete itemCount videoCount pictureCount albumCount isFollowing children( limit: 2 iterator: null filter: null disabledHosts: $hostsDown ) { iterator items { __typename url title subredditTitle subredditUrl redditPath isNsfw albumUrl isFavorite mediaSources { url width height isOptimized } } } } } } \",\"variables\":{\"limit\":30,\"filter\":null,\"hostsDown\":[\"NANO\",\"PICO\"]},\"authorization\":null}")
+	} else {
+		fmt.Println("SUBREDDIT ELSE = ", subreddit)
+		body = strings.NewReader(`{"query":" query SubredditQuery( $url: String! $filter: SubredditPostFilter $iterator: String ) { getSubreddit(url: $url) { children( limit: 50 iterator: $iterator filter: $filter disabledHosts: null ) { iterator items { __typename id url title subredditId subredditTitle subredditUrl redditPath isNsfw albumUrl hasAudio fullLengthSource gfycatSource redgifsSource ownerAvatar username displayName isPaid tags isFavorite mediaSources { url width height isOptimized } blurredMediaSources { url width height isOptimized } } } } } ","variables":{"url":"/r/` + subreddit + `","filter":null,"hostsDown":null},"authorization":null}`)
+	}
 	req, err := http.NewRequest("POST", "https://api.scrolller.com/api/v2/graphql", body)
+	fmt.Println(req)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -122,6 +173,7 @@ func findUrls(content string) []string {
 			fmt.Println(err)
 		}
 		bodyString := string(bodyBytes)
+		fmt.Println(bodyString)
 		urls := re.FindAllString(bodyString, -1)
 		return urls
 	}
@@ -129,46 +181,45 @@ func findUrls(content string) []string {
 }
 
 func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int) {
-
-	if counter == 5 {
-		s.ChannelMessageSend(m.ChannelID, "`Error: I cannot find an image right now.`")
-		counter = 0
-	}
-
 	urls := findUrls(m.Content)
-	if len(urls) == 0 {
+	if len(urls) == 0 && counter < 3 {
+		counter++
 		sendpr0n(s, m, counter)
 	}
 
-	urlToSend := urls[rand.Intn(len(urls))]
+	if counter == 0 {
+		urlToSend := urls[rand.Intn(len(urls))]
 
-	if m.Content == ".pr0n vid --debug" || m.Content == ".pr0n --debug" {
-		message := fmt.Sprintf("```%.1950s```", strings.Join(urls, "\n"))
-		_, discordError := s.ChannelMessageSend(m.ChannelID, message)
-		if discordError != nil {
-			s.ChannelMessageSend(m.ChannelID, discordError.Error())
+		if m.Content == ".pr0n vid --debug" || m.Content == ".pr0n --debug" {
+			message := fmt.Sprintf("```%.1950s```", strings.Join(urls, "\n"))
+			_, discordError := s.ChannelMessageSend(m.ChannelID, message)
+			if discordError != nil {
+				s.ChannelMessageSend(m.ChannelID, discordError.Error())
+			}
+		} else {
+			s.ChannelMessageSend(m.ChannelID, urlToSend)
+			addToHistory(s, m)
 		}
-	} else {
-		s.ChannelMessageSend(m.ChannelID, urlToSend)
-		addToHistory(s, m)
+	} else if counter == 2 {
+		s.ChannelMessageSend(m.ChannelID, "`Error: no img`")
 	}
 }
 
-func getData(s *discordgo.Session, m *discordgo.MessageCreate) {
-	messages, err := s.ChannelMessages(m.ChannelID, 100, "", "", "")
-	if err != nil {
-		s.ChannelMessageSend(m.ChannelID, err.Error())
-	}
-	var botMessages int
-	for _, message := range messages {
-		if message.Author.ID == s.State.User.ID {
-			botMessages++
-		}
-	}
-	if botMessages > 0 {
-		s.ChannelMessageSend(m.ChannelID, strconv.Itoa(botMessages))
-	}
-}
+// func getData(s *discordgo.Session, m *discordgo.MessageCreate) {
+// 	messages, err := s.ChannelMessages(m.ChannelID, 100, "", "", "")
+// 	if err != nil {
+// 		s.ChannelMessageSend(m.ChannelID, err.Error())
+// 	}
+// 	var botMessages int
+// 	for _, message := range messages {
+// 		if message.Author.ID == s.State.User.ID {
+// 			botMessages++
+// 		}
+// 	}
+// 	if botMessages > 0 {
+// 		s.ChannelMessageSend(m.ChannelID, strconv.Itoa(botMessages))
+// 	}
+// }
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
@@ -179,13 +230,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	arabicRegex, _ := regexp.Compile("(?i)arabe")
 	amineRegex, _ := regexp.Compile("(?i)amine")
 	bobRegex, _ := regexp.Compile("(?i)kathioubob")
+	subredditRegexp := regexp.MustCompile(`^\.pr0n\s+\w+`)
 
 	// Handle commands
 	switch m.Content {
-	case ".pr0n data":
-		getData(s, m)
 	case ".pr0n help":
-		s.ChannelMessageSend(m.ChannelID, "``` .pr0n help | .kathiou | .pr0n user | .pr0n | .pr0n vid```")
+		s.ChannelMessageSend(m.ChannelID, "``` .pr0n help | .kathiou | .pr0n | .pr0n vid```")
 	case ".pr0nbot":
 		s.ChannelMessageSend(m.ChannelID, "Hi, I'm a naughty bot that can help you with some basic tasks. Type `.pr0n help` to see a list of available commands.")
 	case ".pr0n delete":
@@ -212,8 +262,15 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
 		}
+	case ".pr0n rand":
+		number := rand.Intn(100)
+		if number == 0 {
+			number += 1
+		}
+		s.ChannelMessageSend(m.ChannelID, strconv.Itoa(number))
 	case ".pr0n vid":
 		{
+			fmt.Println("BBBB")
 			channel, err := s.Channel(m.ChannelID)
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
@@ -224,38 +281,43 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
 		}
-	case ".pr0n vid --debug":
-		if m.Author.Username == "Kathiou" {
-			channel, err := s.Channel(m.ChannelID)
-			if err != nil {
-				s.ChannelMessageSend(m.ChannelID, err.Error())
-			}
-			if channel.NSFW {
-				sendpr0n(s, m, 0)
-			} else {
-				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
-			}
-		} else {
-			user, err := s.User("400752755775373312")
-			if err != nil {
-				s.ChannelMessageSend(m.ChannelID, err.Error())
-			}
-			s.ChannelMessageSend(m.ChannelID, "T'es pas <@!"+user.ID+"> mon pote.")
+	case subredditRegexp.FindString(m.Content):
+		{
+			fmt.Println("AAAAA")
+			sendpr0n(s, m, 0)
 		}
-	case ".pr0n --debug":
-		if m.Author.Username == "Kathiou" {
-			channel, err := s.Channel(m.ChannelID)
-			if err != nil {
-				s.ChannelMessageSend(m.ChannelID, err.Error())
-			}
-			if channel.NSFW {
-				sendpr0n(s, m, 0)
-			} else {
-				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
-			}
-		} else {
-			s.ChannelMessageSend(m.ChannelID, "T'es pas Kathiou mon pote.")
-		}
+	// case ".pr0n vid --debug":
+	// 	if m.Author.Username == "Kathiou" {
+	// 		channel, err := s.Channel(m.ChannelID)
+	// 		if err != nil {
+	// 			s.ChannelMessageSend(m.ChannelID, err.Error())
+	// 		}
+	// 		if channel.NSFW {
+	// 			sendpr0n(s, m, 0)
+	// 		} else {
+	// 			s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
+	// 		}
+	// 	} else {
+	// 		user, err := s.User("400752755775373312")
+	// 		if err != nil {
+	// 			s.ChannelMessageSend(m.ChannelID, err.Error())
+	// 		}
+	// 		s.ChannelMessageSend(m.ChannelID, "T'es pas <@!"+user.ID+"> mon pote.")
+	// 	}
+	// case ".pr0n --debug":
+	// 	if m.Author.Username == "Kathiou" {
+	// 		channel, err := s.Channel(m.ChannelID)
+	// 		if err != nil {
+	// 			s.ChannelMessageSend(m.ChannelID, err.Error())
+	// 		}
+	// 		if channel.NSFW {
+	// 			sendpr0n(s, m, 0)
+	// 		} else {
+	// 			s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
+	// 		}
+	// 	} else {
+	// 		s.ChannelMessageSend(m.ChannelID, "T'es pas Kathiou mon pote.")
+	// 	}
 	case ".pr0n --version":
 		s.ChannelMessageSend(m.ChannelID, "`"+*version+"`")
 	}
