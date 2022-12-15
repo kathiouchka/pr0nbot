@@ -433,7 +433,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "(rebeu)")
 	}
 	if sveylRegex.MatchString(m.Content) {
-		s.ChannelMessageSend(m.ChannelID, "(fils de pute)")
+		s.ChannelMessageSend(m.ChannelID, "(bogoss)")
 	}
 	if bobRegex.MatchString(m.Content) {
 		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/458438504129757186/1010225494869946470/kathioubob.png")
