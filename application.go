@@ -308,7 +308,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 		subToSend := subTitles[randIndex]
 		if m.Content == ".pr0n vid" {
 			s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+urlToSend)
-		} else if !strings.Contains(source.URL, "static") && !strings.Contains(source.URL, "redgifs") {
+		} else {
 			s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+urlToSend)
 // 			messagePosted, err := s.ChannelMessageSend(m.ChannelID, urlToSend)
 // 			if err != nil {
