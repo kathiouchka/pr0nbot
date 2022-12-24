@@ -309,7 +309,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 		if m.Content == ".pr0n vid" {
 			s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+urlToSend)
 		} else {
-			messagePosted, err := s.ChannelMessageSend(m.ChannelID, urlToSend, "`"+subToSend+"`")
+			messagePosted, err := s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+urlToSend)
 			if err != nil {
 				fmt.Println(err)
 			}
