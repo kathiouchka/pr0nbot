@@ -309,11 +309,11 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 		if m.Content == ".pr0n vid" {
 			s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+urlToSend)
 		} else {
-			messagePosted, err := s.ChannelMessageSend(m.ChannelID, urlToSend)
-			if err != nil {
-				fmt.Println(err)
+			s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+urlToSend)
+// 			messagePosted, err := s.ChannelMessageSend(m.ChannelID, urlToSend)
+// 			if err != nil {
+// 				fmt.Println(err)
 			}
-			s.ChannelMessageSend(m.ChannelID, "TEST")
 			// s.ChannelMessageEdit(m.ChannelID, messagePosted.ID, "`"+subToSend+"`")
 		}
 		addToHistory(s, m)
@@ -366,7 +366,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/633980782175584256/673619354360741912/kat.gif")
 	case ".pr0n":
 		{
-			s.ChannelMessageSend(m.ChannelID, "coucou")
 			channel, err := s.Channel(m.ChannelID)
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
