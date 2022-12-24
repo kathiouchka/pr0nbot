@@ -366,6 +366,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/633980782175584256/673619354360741912/kat.gif")
 	case ".pr0n":
 		{
+			s.ChannelMessageSend(m.ChannelID, "coucou")
 			channel, err := s.Channel(m.ChannelID)
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
