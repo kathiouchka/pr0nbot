@@ -313,7 +313,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 // 			messagePosted, err := s.ChannelMessageSend(m.ChannelID, urlToSend)
 // 			if err != nil {
 // 				fmt.Println(err)
-			}
+// 			}
 			// s.ChannelMessageEdit(m.ChannelID, messagePosted.ID, "`"+subToSend+"`")
 		}
 		addToHistory(s, m)
