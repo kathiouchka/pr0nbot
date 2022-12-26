@@ -274,7 +274,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 		for _, item := range data.Data.DiscoverSubreddits.Items {
 			for _, mediaSource := range item.Children.Items {
 				for _, source := range mediaSource.MediaSources {
-					if re.MatchString(source.URL) && !strings.Contains(source.URL, "static") && !strings.Contains(source.URL, "redgifs") {
+					if re.MatchString(source.URL) && !strings.Contains(source.URL, "static") && !strings.Contains(source.URL, "redgifs") && !strings.Contains(source.URL, "femto")  && !strings.Contains(source.URL, "atto") && !strings.Contains(source.URL, "pico") && !strings.Contains(source.URL, "yocto") {
 						urls = append(urls, source.URL)
 						subTitles = append(subTitles, mediaSource.SubredditTitle)
 					}
