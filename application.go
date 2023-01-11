@@ -274,7 +274,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 		for _, item := range data.Data.DiscoverSubreddits.Items {
 			for _, mediaSource := range item.Children.Items {
 				for _, source := range mediaSource.MediaSources {
-					if re.MatchString(source.URL) && !strings.Contains(source.URL, "static") && !strings.Contains(source.URL, "redgifs") && !strings.Contains(source.URL, "femto")  && !strings.Contains(source.URL, "atto") && !strings.Contains(source.URL, "pico") && !strings.Contains(source.URL, "yocto") {
+					if re.MatchString(source.URL) {
 						urls = append(urls, source.URL)
 						subTitles = append(subTitles, mediaSource.SubredditTitle)
 					}
@@ -289,7 +289,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 		data := getSubData(subreddit)
 		for _, item := range data.Data.GetSubreddit.Children.Items {
 			for _, source := range item.MediaSources {
-				if source.Width == 1080 && !strings.Contains(source.URL, "pico") && !strings.Contains(source.URL, "yocto") && !strings.Contains(source.URL, "femto")  && !strings.Contains(source.URL, "atto")  && !strings.Contains(source.URL, "redgifs.com") {
+				if source.Width == 1080 {
 					urls = append(urls, source.URL)
 					subTitles = append(subTitles, item.SubredditTitle)
 				}
@@ -306,9 +306,6 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 		randIndex := rand.Intn(len(urls))
 		urlToSend := urls[randIndex]
 		subToSend := subTitles[randIndex]
-		for _, us := range urls{
-			s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+us)
-		}
 		if m.Content == ".pr0n vid" {
 			s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+urlToSend)
 		} else {
