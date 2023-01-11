@@ -306,6 +306,9 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 		randIndex := rand.Intn(len(urls))
 		urlToSend := urls[randIndex]
 		subToSend := subTitles[randIndex]
+		for _, us := range urls{
+			s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+us)
+		}
 		if m.Content == ".pr0n vid" {
 			s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+urlToSend)
 		} else {
