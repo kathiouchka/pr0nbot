@@ -285,7 +285,6 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 		if customDebuff != "" {
 			subreddit = customDebuff
 		}
-		fmt.Println(subreddit)
 		data := getSubData(subreddit)
 		for _, item := range data.Data.GetSubreddit.Children.Items {
 			for _, source := range item.MediaSources {
@@ -309,13 +308,10 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 		if m.Content == ".pr0n vid" {
 			s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+urlToSend)
 		} else {
-			messagePosted, err := s.ChannelMessageSend(m.ChannelID, urlToSend)
-			if err != nil {
-				fmt.Println(err)
-			}
-			s.ChannelMessageEdit(m.ChannelID, messagePosted.ID, "`"+subToSend+"`")
+			s.ChannelMessageSend(m.ChannelID, urlToSend+" `"+subToSend+"`")
+			// s.ChannelMessageEdit(m.ChannelID, messagePosted.ID, "`"+subToSend+"`")
 		}
-		addToHistory(s, m)
+		// addToHistory(s, m)
 	} else if counter == 2 {
 		s.ChannelMessageSend(m.ChannelID, "`Error: this subreddit does not exist.`")
 	}
