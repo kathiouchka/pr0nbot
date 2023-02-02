@@ -336,7 +336,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Handle commands
 	switch m.Content {
 	case ".pr0n help":
-		s.ChannelMessageSend(m.ChannelID, "``` .pr0n help | .kathiou | .pr0n | .pr0n vid | .pr0n listnsfw | .pr0n code```")
+		s.ChannelMessageSend(m.ChannelID, "``` .pr0n help | .kathiou | .pr0n | .pr0n vid | .pr0n listnsfw | .pr0n code | .pr0n invite```")
 	case ".pr0nbot":
 		s.ChannelMessageSend(m.ChannelID, "Hi, I'm a naughty bot that can help you with some basic tasks. Type `.pr0n help` to see a list of available commands.")
 	case ".pr0n delete":
@@ -363,6 +363,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "https://github.com/kathiouchka/pr0nbot")
 	case ".kathiou":
 		s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/633980782175584256/673619354360741912/kat.gif")
+	case ".pr0n invite":
+		s.ChannelMessageSend(m.ChannelID, "`"+"https://discord.bots.gg/bots/458380753688985601"+"`")
 	case ".pr0n":
 		{
 			channel, err := s.Channel(m.ChannelID)
