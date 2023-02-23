@@ -304,6 +304,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Handle commands
 	switch m.Content {
+	case ".pr0n contact":
+		s.ChannelMessageSend(m.ChannelID, "You can contact me on discord : Kathiou#0428")
 	case ".pr0n help":
 		s.ChannelMessageSend(m.ChannelID, "``` .pr0n | .pr0n vid | .pr0n [subredditName] | .pr0n listnsfw | .pr0n code | .pr0n invite | .pr0n contact```")
 	case ".pr0nbot":
@@ -363,7 +365,5 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	case ".pr0n --version":
 		s.ChannelMessageSend(m.ChannelID, "`"+*version+"`")
-	case ".pr0n contact":
-		s.ChannelMessageSend(m.ChannelID, "You can contact me on discord : Kathiou#0428")
 	}
 }
