@@ -153,45 +153,6 @@ func main() {
 	dg.Close()
 }
 
-// global historic of 10 last message from discord bot
-// var historic []string
-
-// func addToHistory(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	msgInfo, _ := s.Channel(m.ChannelID)
-// 	msgID := msgInfo.LastMessageID
-
-// 	// Append the new message ID to the end of the slice
-// 	historic = append(historic, msgID)
-
-// 	// If the slice has more than 10 elements, remove the first element
-// 	if len(historic) > 10 {
-// 		historic = historic[1:]
-// 	}
-// }
-
-// func remFromHistory(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	// If the slice is empty, do nothing
-// 	if len(historic) == 0 {
-// 		return
-// 	}
-
-// 	// Delete the last message in the slice
-// 	s.ChannelMessageDelete(m.ChannelID, historic[len(historic)-1])
-
-// 	// Remove the last element from the slice
-// 	historic = historic[:len(historic)-1]
-// }
-
-// func remAllFromHistory(s *discordgo.Session, m *discordgo.MessageCreate) {
-// 	// Delete all messages in the slice
-// 	for _, msgID := range historic {
-// 		s.ChannelMessageDelete(m.ChannelID, msgID)
-// 	}
-
-// 	// Clear the slice
-// 	historic = nil
-// }
-
 func getRandData() randScrollerStruct {
 	var res randScrollerStruct
 	body := strings.NewReader("{\"query\":\" query DiscoverSubredditsQuery( $filter: MediaFilter $limit: Int $iterator: String $hostsDown: [HostDisk] ) { discoverSubreddits( isNsfw: true filter: $filter limit: $limit iterator: $iterator ) { iterator items { __typename url title secondaryTitle description createdAt isNsfw subscribers isComplete itemCount videoCount pictureCount albumCount isFollowing children( limit: 2 iterator: null filter: null disabledHosts: $hostsDown ) { iterator items { __typename url title subredditTitle subredditUrl redditPath isNsfw albumUrl isFavorite mediaSources { url width height isOptimized } } } } } } \",\"variables\":{\"limit\":30,\"filter\":null,\"hostsDown\":[\"NANO\",\"PICO\"]},\"authorization\":null}")
@@ -328,9 +289,7 @@ func sendpr0n(s *discordgo.Session, m *discordgo.MessageCreate, counter int, cus
 			s.ChannelMessageSend(m.ChannelID, "`"+subToSend+"` "+urlToSend)
 		} else {
 			s.ChannelMessageSend(m.ChannelID, urlToSend+" `"+subToSend+"`")
-			// s.ChannelMessageEdit(m.ChannelID, messagePosted.ID, "`"+subToSend+"`")
 		}
-		// addToHistory(s, m)
 	} else if counter == 2 {
 		s.ChannelMessageSend(m.ChannelID, "`Error: this subreddit does not exist.`")
 	}
@@ -341,11 +300,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	// Compile regular expressions
-	// arabicRegex, _ := regexp.Compile(`(?i)(^|\s)arabe(\s|$)`)
-	// amineRegex, _ := regexp.Compile(`(?i)(^|\s)amine(\s|$)`)
-	// sveylRegex, _ := regexp.Compile(`(?i)(^|\s)sveyl(\s|$)`)
-	// bobRegex, _ := regexp.Compile("(?i)kathioubob")
 	subredditRegexp := regexp.MustCompile(`\.pr0n\s\w+`)
 
 	// Handle commands
@@ -354,16 +308,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "``` .pr0n help | .kathiou | .pr0n | .pr0n vid | .pr0n listnsfw | .pr0n code | .pr0n invite | .pr0n donate```")
 	case ".pr0nbot":
 		s.ChannelMessageSend(m.ChannelID, "Hi, I'm a naughty bot that can help you with some basic tasks. Type `.pr0n help` to see a list of available commands.")
-	// case ".pr0n delete":
-	// 	if m.Author.Username == "Kathiou" {
-	// 		info, _ := s.Channel(m.ChannelID)
-	// 		s.ChannelMessageDelete(m.ChannelID, info.LastMessageID)
-	// 		remFromHistory(s, m)
-	// 	}
-	// case ".pr0n deleteAll":
-	// 	if m.Author.Username == "Kathiou" {
-	// 		remAllFromHistory(s, m)
-	// 	}
 	case ".pr0n listnsfw":
 		channel, err := s.Channel(m.ChannelID)
 		if err != nil {
@@ -376,8 +320,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	case ".pr0n code":
 		s.ChannelMessageSend(m.ChannelID, "https://github.com/kathiouchka/pr0nbot")
-	// case ".kathiou":
-	// s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/633980782175584256/673619354360741912/kat.gif")
 	case ".pr0n invite":
 		s.ChannelMessageSend(m.ChannelID, "`"+"https://discord.bots.gg/bots/458380753688985601"+"`")
 	case ".pr0n":
@@ -392,13 +334,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
 		}
-	// case ".pr0n rand":
-	// 	rand.Seed(time.Now().UnixNano())
-	// 	number := rand.Intn(100)
-	// 	if number == 0 {
-	// 		number += 1
-	// 	}
-	// 	s.ChannelMessageSend(m.ChannelID, strconv.Itoa(number))
 	case ".pr0n vid":
 		{
 			channel, err := s.Channel(m.ChannelID)
@@ -426,29 +361,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				s.ChannelMessageSend(m.ChannelID, "This channel is not NSFW!")
 			}
 		}
-
-	// HOW TO PING USER
-	// 		user, err := s.User("400752755775373312")
-	// 		if err != nil {
-	// 			s.ChannelMessageSend(m.ChannelID, err.Error())
-	// 		}
-	// 		s.ChannelMessageSend(m.ChannelID, "T'es pas <@!"+user.ID+"> mon pote.")
-
 	case ".pr0n --version":
 		s.ChannelMessageSend(m.ChannelID, "`"+*version+"`")
 	}
-
-	// // Handle regular expressions
-	// if arabicRegex.MatchString(m.Content) {
-	// 	s.ChannelMessageSend(m.ChannelID, "(Amine)")
-	// }
-	// if amineRegex.MatchString(m.Content) {
-	// 	s.ChannelMessageSend(m.ChannelID, "(rebeu)")
-	// }
-	// if sveylRegex.MatchString(m.Content) {
-	// 	s.ChannelMessageSend(m.ChannelID, "(bogoss)")
-	// }
-	// if bobRegex.MatchString(m.Content) {
-	// 	s.ChannelMessageSend(m.ChannelID, "https://cdn.discordapp.com/attachments/458438504129757186/1010225494869946470/kathioubob.png")
-	// }
 }
